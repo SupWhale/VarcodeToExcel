@@ -12,11 +12,16 @@ from openpyxl import Workbook
 
 
 def decode(im): #이미지내에서 바코드를 찾아내고 해당 타입과 데이터를 출력하는 함수
-    decodedObjects = pyzbar.decode(im)
-    for obj in decodedObjects:
-        print('Type : ', obj.type)
-        print('Data : ', obj.data, '\n')
-    return decodedObjects
+    
+    try:
+        decodedObjects = pyzbar.decode(im)
+    
+        for obj in decodedObjects:
+            print('Type : ', obj.type)
+            print('Data : ', obj.data, '\n')
+        return decodedObjects
+    finally:
+        return None
 
 def macadd(mac):
     list = [0,0,0,0,0,0,0,0,0,0,0]
@@ -64,6 +69,11 @@ def camThread():
                 im = cv2.imread(os.path.join(os.path.abspath('jpg') , 'bacode.jpg'))
                     
                 decodedObjects = decode(im) #바코드 해석
+
+                if decodedObjects is None:
+                    print('Error')
+                    break
+
                 write_ws = write_wb.active #엑셀 파일에 쓰기 활성화
 
                 
