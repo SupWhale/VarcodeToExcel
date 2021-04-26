@@ -41,7 +41,8 @@ def camThread():
     
     print('width :%d, height : %d' % (cap.get(3), cap.get(4))) #현재 카메라의 해상도 출력
 
-   
+    a = 2
+    b = 3
     check_code = False
     choice = input('사용할 모드 선택 \n1. 의사협회 장비 관리모드 2. 재고 관리 모드\n')
     while(True):
@@ -70,14 +71,18 @@ def camThread():
                 im = cv2.imread('bacode.jpg')
                     
                 decodedObjects = decode(im) #바코드 해석
-                write_ws = write_wb.active #엑셀 파일에 쓰기 활성화
-
+                write_ws = write_wb.active #엑셀 파일에 쓰기 활성화            
                 
-                
-                if choice == '1':
-                    Doctor(write_ws, decodedObjects)
-                elif choice == '2':
-                    Stock_Manage(write_ws, decodedObjects)
+                if choice == "1":
+                    Doctor(write_ws, decodedObjects,a,b)
+                    if a < 6:
+                        a = a+1
+                    elif a == 6:
+                        a = 3
+                        b = b+1
+                elif choice == "2":
+                    Stock_Manage(write_ws, decodedObjects,a,b)
+                    b = b+1
                 
                 str = datetime.today().strftime("%Y년%m월%d일%H시")
                     
@@ -92,46 +97,19 @@ def camThread():
     cv2.destroyAllWindows()
 
 
-def Doctor(write_ws, decodedObjects):
-    a = 10 #지정된 열 번호
-    b = 4 #지정된 행 번호
+def Doctor(write_ws, decodedObjects,a,b):
     
     for obj in decodedObjects:
-         
-            if obj: #바코드가 탐지가 되지 않았다면 false
-                check_code = True
-            else:
-                check_code = False
-
-            if a == 10 and check_code == True: #바코드가 탐지되었다면 데이터 작성 후  다음 열로 이동
-                print('물리 주소인식 완료\n')
-                code = obj.data
-                write_ws.cell(b,a,macadd(code.decode()))
-                a = a+1
+        code = obj.data
+        write_ws.cell(b,a,macadd(code.decode()))       
+    
                 
-            elif a < 13 and check_code == True: #바코드가 탐지되었다면 데이터 작성 후  다음 열로 이동
-                print('인식 완료\n')
-                write_ws.cell(b,a,obj.data)
-                a = a+1
-            elif a == 13 and check_code == True: #바코드가 탐지되었다면 데이터 작성 후 줄 바꿈
-                print('인식 완료\n')
-                write_ws.cell(b,a,obj.data)
-                a = 10
-                b = b+1
-                
-            elif check_code == False: #바코드가 탐지 되지 않았다면 헤당 셀에서 대기
-                print('인식 불가')
-                a = a
-                b = b
-                
-def Stock_Manage(write_ws, decodedObjects):
-    a = 2
-    b = 3
+def Stock_Manage(write_ws, decodedObjects,a,b):
 
     for obj in decodedObjects:
         code = obj.data
-        wirte_ws.cell(b,a,obj.data)
-        b = b+1
+        write_ws.cell(b,a,obj.data)
+    
     
 if __name__ == '__main__': #Main
     thread_img = threading.Thread(target=camThread, args=())
