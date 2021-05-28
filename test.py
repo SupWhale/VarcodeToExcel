@@ -43,6 +43,7 @@ def macadd(mac):
     return result
 
 def CheckType_Serial(code):
+    
     result = ""
     if code[0] == 'T':
         result = "Tem"
@@ -57,14 +58,19 @@ def CheckType_Serial(code):
         
 def Setmode_Doc(ch):
     global choice
+    State.config(text = '의사협회모드')
     choice = ch + 1
     
-
 def Setmode_Stock(ch):
     global choice
+    State.config(text = '재고관리모드')
     choice = ch + 2
     
-
+def Setmode_Install(ch):
+    global choice
+    State.config(text = '설치정보모드')
+    choice = ch + 3
+    
 def camThread():
     cap = cv2.VideoCapture(0) #외부 웹캠을 불러옴
     write_wb = Workbook() #워크시트를 생성할 객체 생성
@@ -76,8 +82,6 @@ def camThread():
     width = 2
     high = 3
     check_code = False
-    #choice = input('사용할 모드 선택 \n1. 의사협회 장비 관리모드 2. 재고 관리 모드\n')
-    #choice = 0
     while(True):
         ret, frame = cap.read()    # Read 결과와 frame
         if(ret) :
@@ -106,13 +110,19 @@ def camThread():
                 
                 if choice == 1:
                     Doctor(write_ws, decodedObjects,width,high)
+                   
                     if width < 6:
                         width = width+1
                     elif width == 6:
                         width = 3
                         high = high+1
+                        
                 elif choice == 2:
                     Stock_Manage(write_ws, decodedObjects,width,high)
+                    high = high+1
+                    
+                elif choice == 3:
+                    install_Int(write_ws, decodedObjects,width,high)
                     high = high+1
                 
                 str = datetime.today().strftime("%Y년%m월%d일%H시")
@@ -121,7 +131,6 @@ def camThread():
             
     cap.release() #프로그램 최종종료
     cv2.destroyAllWindows()
-
 
 def Doctor(write_ws, decodedObjects,width,high):
     
@@ -137,8 +146,17 @@ def Stock_Manage(write_ws, decodedObjects,width,high):
         code = obj.data
         result.config(text = obj.data)
         write_ws.cell(high,width,obj.data)
-    
-    
+
+def install_Int(write_ws, decodedObjects,width,high):
+    for obj in decodedObjects:
+        code = obj.data
+        result.config(text = obj.data)
+        str_high = str(high)
+        location = 'A'+str_high
+        write_ws[location] = obj.data
+        merge_location = 'A'+str_high+':C'+str_high
+        write_ws.merge_cells(merge_location)
+       
 if __name__ == '__main__': #Main
     thread_img = threading.Thread(target=camThread, args=())
     thread_img.daemon = True
@@ -149,11 +167,17 @@ if __name__ == '__main__': #Main
     root = tk.Tk()
     root.geometry("1200x600+100+100")
 
+    State = tk.Label(root, text = '모드를 입력하십시오', font = 'TkFixedFont')
+    State.pack()
+
     button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
     button1.place(x=1000, y=500)
 
     button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
     button2.place(x=1000, y=400)
+
+    button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
+    button3.place(x=1000, y=300)
 
     result = tk.Label(root, text = 'Result', font = 'TkFixedFont')
     result.pack()
