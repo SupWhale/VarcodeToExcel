@@ -13,7 +13,6 @@ from datetime import datetime
 from toExcel import *
 from decode import *
 
-
 def Setmode_Doc(ch):
     global choice
     State.config(text = '의사협회모드')
@@ -29,10 +28,16 @@ def Setmode_Install(ch):
     State.config(text = '설치정보모드')
     choice = ch + 3
 
-def check_point():
-
-    global end_point
-    end_point = True
+def save_filename(types):
+    
+    stri = ""
+    
+    if types == 2:
+        stri = "재고 관리 파일"
+    else:
+        stri = datetime.today().strftime("%Y년%m월%d일%H시")
+        
+    return stri
 
 def camThread():
     
@@ -49,11 +54,13 @@ def camThread():
 
     width = 2
     high = 3
-    pmc_h=[1,0]
-    irc_h=[1,0]
-    tms_h=[1,0]
-    gateway_h=[1,0]
+    pmc_h=1
+    irc_h=1
+    tms_h=1
+    gateway_h=1
+    
     check_code = False
+    
     while(True):
         end_point = False
         ret, frame = cap.read()    # Read 결과와 frame
@@ -105,27 +112,23 @@ def camThread():
                         
                         if types == "TMS":
                             
-                            Stock_Manage(tms_ws, decodedObjects_s,width,tms_h[0])
-                            tms_h[1] = tms_h[0]
-                            tms_h[0] = tms_h[0]+1
+                            Stock_Manage(tms_ws, decodedObjects_s,width,tms_h)
+                            tms_h = tms_h+1
                             
                         elif types == "PMC":
                             
-                            Stock_Manage(pmc_ws, decodedObjects_s,width,pmc_h[0])
-                            pmc_h[1] = pmc_h[0]
-                            pmc_h[0] = pmc_h[0] + 1
+                            Stock_Manage(pmc_ws, decodedObjects_s,width,pmc_h)
+                            pmc_h = pmc_h+ 1
                             
                         elif types == "IRC":
 
-                            Stock_Manage(irc_ws, decodedObjects_s,width,irc_h[0])
-                            irc_h[1] = irc_h[0]
-                            irc_h[0] = irc_h[0] + 1
+                            Stock_Manage(irc_ws, decodedObjects_s,width,irc_h)
+                            irc_h = irc_h+ 1
                             
                         elif types == "GateWay":
                             
                             Stock_Manage(gateway_ws, decodedObjects_s,width,gateway_h[0])
-                            gateway_h[1] = gateway_h[0]
-                            gateway_h[0] = gateway_h[0]+1
+                            gateway_h = gateway_h+1
                             
                         high = high+1
                         
@@ -134,9 +137,10 @@ def camThread():
                         install_Int(write_ws, decodedObjects,width,high)
                         high = high+1
                     
-                    str = datetime.today().strftime("%Y년%m월%d일%H시")
-                        
-                    write_wb.save(str + '.xlsx') #엑셀 파일 저장
+                    
+                    stri = save_filename(choice)
+                    
+                    write_wb.save(stri + '.xlsx') #엑셀 파일 저장
                 
     cap.release() #프로그램 최종종료
     cv2.destroyAllWindows()
@@ -163,9 +167,6 @@ if __name__ == '__main__': #Main
 
     button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
     button3.place(x=1000, y=300)
-
-    button4 = tk.Button(root, overrelief="solid", text = "체크포인트 기록" ,width=15, command = check_point())
-    button4.place(x=1000, y=200)
 
     result = tk.Label(root, text = 'Result', font = 'TkFixedFont')
     result.pack()

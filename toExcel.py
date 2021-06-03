@@ -63,6 +63,7 @@ def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
         stri = datetime.today().strftime("%Y-%m-%d")
         
         write_ws.cell(high,width+2,stri)
+        write_ws.cell(high+1,width,"....")
 
 def install_Int(write_ws, decodedObjects,width,high): #GEM 설치정보 양식에 맞춘 모드
     
