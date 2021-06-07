@@ -8,7 +8,7 @@ import os
 import time
 import cv2
 import pyzbar.pyzbar as pyzbar
-from openpyxl import Workbook
+from openpyxl import *
 from datetime import datetime
 from toExcel import *
 from decode import *
@@ -42,22 +42,40 @@ def save_filename(types):
 def camThread():
     
     cap = cv2.VideoCapture(0) #외부 웹캠을 불러옴
-    write_wb = Workbook() #워크시트를 생성할 객체 생성
-    panel = None #GUI를 생성할 판넬 생성
-    write_ws = write_wb.create_sheet('기본시트') #워크 시트 생성
-    gateway_ws = write_wb.create_sheet('Gateway')
-    pmc_ws = write_wb.create_sheet('PMC')
-    tms_ws = write_wb.create_sheet('TMS')
-    irc_ws = write_wb.create_sheet('IRC')
     
+    panel = None #GUI를 생성할 판넬 생성
+    if choice == 2:
+        write_wb = load_workbook("재고 관리 파일.xlsx")
+        pmc_ws = write_wb['PMC']
+        gateway_ws = write_wb['Gateway']
+        tms_ws = write_wb['TMS']
+        irc_ws = write_wb['IRC']
+
+        width = 2
+        high = 3
+        pmc_h=pmc_ws.cell(1,10).value
+        irc_h=irc_ws.cell(1,10).value
+        tms_h= tms_ws.cell(1,10).value
+        gateway_h=gateway_ws.cell(1,10).value
+        
+    else:
+        write_wb = Workbook() #워크시트를 생성할 객체 생성
+        write_ws = write_wb.create_sheet('기본시트') #워크 시트 생성
+        gateway_ws = write_wb.create_sheet('Gateway')
+        pmc_ws = write_wb.create_sheet('PMC')
+        tms_ws = write_wb.create_sheet('TMS')
+        irc_ws = write_wb.create_sheet('IRC')
+
+        width = 2
+        high = 3
+        pmc_h=1
+        irc_h=1
+        tms_h=1
+        gateway_h=1
+            
     print('width :%d, height : %d' % (cap.get(3), cap.get(4))) #현재 카메라의 해상도 출력
 
-    width = 2
-    high = 3
-    pmc_h=1
-    irc_h=1
-    tms_h=1
-    gateway_h=1
+    
     
     check_code = False
     
@@ -95,11 +113,11 @@ def camThread():
                 
                     if choice == 1:
                         
-                        Doctor(write_ws, decodedObjects,width,high)
+                        Large_scale_processing(write_ws, decodedObjects,width,high)
                        
-                        if width < 6:
+                        if width < 11:
                             width = width+1
-                        elif width == 6:
+                        elif width == 11:
                             width = 3
                             high = high+1
                             
@@ -159,7 +177,7 @@ if __name__ == '__main__': #Main
     State = tk.Label(root, text = '모드를 입력하십시오', font = 'TkFixedFont')
     State.pack()
 
-    button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
+    button1 = tk.Button(root, overrelief="solid", text = "대규모 처리 모드" ,width=15, command = lambda: Setmode_Doc(ch))
     button1.place(x=1000, y=500)
 
     button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))

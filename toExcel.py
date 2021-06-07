@@ -49,7 +49,7 @@ def CheckType_Serial(code):
     
     return result
         
-def Doctor(write_ws, decodedObjects,width,high): #의사협회 관리 모드
+def Large_scale_processing(write_ws, decodedObjects,width,high): #의사협회 관리 모드
     
     for obj in decodedObjects:
         code = obj.data
@@ -63,7 +63,7 @@ def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
         stri = datetime.today().strftime("%Y-%m-%d")
         
         write_ws.cell(high,width+2,stri)
-        write_ws.cell(high+1,width,"....")
+        write_ws.cell(1,10,high)
 
 def install_Int(write_ws, decodedObjects,width,high): #GEM 설치정보 양식에 맞춘 모드
     
