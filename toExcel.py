@@ -49,8 +49,8 @@ def CheckType_Serial(code):
     
     return result
         
-def Large_scale_processing(write_ws, decodedObjects,width,high): #의사협회 관리 모드
-    
+def Doctor_processing(write_ws, decodedObjects,width,high): #의사협회 관리 모드
+        
     for obj in decodedObjects:
         code = obj.data
         write_ws.cell(high,width,macadd(code.decode()))     

@@ -104,8 +104,8 @@ def camThread():
                     
                 decodedObjects = decode(im)#바코드 해석 
                 result.config(text = decode_serial(im))
-              
-                if decodedObjects == '[]' or decodedObjects == '':
+                
+                if decodedObjects == []:
                     result.config(text = "감지된 바코드가 없습니다.")
                     continue
                 
@@ -113,13 +113,14 @@ def camThread():
                 
                     if choice == 1:
                         
-                        Large_scale_processing(write_ws, decodedObjects,width,high)
-                       
-                        if width < 11:
+                        Doctor_processing(write_ws, decodedObjects,width,high)
+                        
+                        if width < 7:
                             width = width+1
-                        elif width == 11:
+                        elif width == 7:
                             width = 3
                             high = high+1
+                        
                             
                     elif choice == 2:
                         
@@ -177,7 +178,7 @@ if __name__ == '__main__': #Main
     State = tk.Label(root, text = '모드를 입력하십시오', font = 'TkFixedFont')
     State.pack()
 
-    button1 = tk.Button(root, overrelief="solid", text = "대규모 처리 모드" ,width=15, command = lambda: Setmode_Doc(ch))
+    button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
     button1.place(x=1000, y=500)
 
     button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
