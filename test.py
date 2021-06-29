@@ -12,7 +12,6 @@ from openpyxl import Workbook
 from datetime import datetime
 
 
-
 def decode_serial(im): #이미지내에서 바코드를 찾아내고 해당 타입과 데이터를 출력하는 함수
     
     decodedObjects = pyzbar.decode(im)
@@ -99,6 +98,11 @@ def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
 
         result.config(text = decodedObjects)
         write_ws.cell(high,width,decodedObjects)
+        write_ws.cell(high,width+1,'회사 7층')
+
+        stri = datetime.today().strftime("%Y-%m-%d")
+        
+        write_ws.cell(high,width+2,stri)
 
 def install_Int(write_ws, decodedObjects,width,high): #GEM 설치정보 양식에 맞춘 모드
     

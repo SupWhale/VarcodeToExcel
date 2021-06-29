@@ -148,7 +148,7 @@ def camThread():
                                     
                                 elif types == "GateWay":
                                     
-                                    Stock_Manage(gateway_ws, decodedObjects_s,width,gateway_h[0])
+                                    Stock_Manage(gateway_ws, decodedObjects_s,width,gateway_h)
                                     gateway_h = gateway_h+1
                                     
                                 high = high+1
@@ -165,8 +165,23 @@ def camThread():
                         
             cap.release() #프로그램 최종종료
             cv2.destroyAllWindows()
+            
     except NameError as e:
         print(e)
+
+        result.config(text = "프로그램 시작 직후 반드시 모드를 선택해주세요! 잠시 후 프로그램이 재시작됩니다.")
+        result2.config(text = "모드가 선택되지 않았습니다.")
+
+        time.sleep(15)
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    except PermissionError as e:
+        print(e)
+
+        result.config(text = "현재 활성화 된 엑셀 파일을 닫아주세요! 잠시후 프로그램이 재시작됩니다.")
+        result2.config(text = e)
+
+        time.sleep(15)
         os.execl(sys.executable, sys.executable, *sys.argv)
         
 
@@ -178,7 +193,8 @@ if __name__ == '__main__': #Main
 
             ch = 0
             
-            root = tk.Tk("1")
+            root = tk.Tk()
+            root.title("GEM 자동화 엑셀 작성 툴")
             root.geometry("1200x600+100+100")
 
             State = tk.Label(root, text = '모드를 입력하십시오', font = 'TkFixedFont')
@@ -195,6 +211,9 @@ if __name__ == '__main__': #Main
 
             result = tk.Label(root, text = 'Result', font = 'TkFixedFont')
             result.pack()
+
+            result2 = tk.Label(root, text = 'Result', font = 'TkFixedFont')
+            result2.pack()
 
             
             
