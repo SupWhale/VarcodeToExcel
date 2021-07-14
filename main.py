@@ -12,6 +12,7 @@ from openpyxl import *
 from datetime import datetime
 from toExcel import *
 from decode import *
+from GEM import *
 import sys
 
 def Setmode_Doc(ch):
@@ -43,37 +44,23 @@ def save_filename(types):
 def camThread():
 
     try:
-            cap = cv2.VideoCapture(0) #외부 웹캠을 불러옴
+            cap = cv2.VideoCapture(1) #외부 웹캠을 불러옴
             
             panel = None #GUI를 생성할 판넬 생성
-            if choice == 2:
-                write_wb = load_workbook("재고 관리 파일.xlsx")
-                pmc_ws = write_wb['PMC']
-                gateway_ws = write_wb['Gateway']
-                tms_ws = write_wb['TMS']
-                irc_ws = write_wb['IRC']
+          
+            write_wb = Workbook() #워크시트를 생성할 객체 생성
+            write_ws = write_wb.create_sheet('기본시트') #워크 시트 생성
+            gateway_ws = write_wb.create_sheet('Gateway')
+            pmc_ws = write_wb.create_sheet('PMC')
+            tms_ws = write_wb.create_sheet('TMS')
+            irc_ws = write_wb.create_sheet('IRC')
 
-                width = 2
-                high = 3
-                pmc_h=pmc_ws.cell(1,10).value
-                irc_h=irc_ws.cell(1,10).value
-                tms_h= tms_ws.cell(1,10).value
-                gateway_h=gateway_ws.cell(1,10).value
-                
-            else:
-                write_wb = Workbook() #워크시트를 생성할 객체 생성
-                write_ws = write_wb.create_sheet('기본시트') #워크 시트 생성
-                gateway_ws = write_wb.create_sheet('Gateway')
-                pmc_ws = write_wb.create_sheet('PMC')
-                tms_ws = write_wb.create_sheet('TMS')
-                irc_ws = write_wb.create_sheet('IRC')
-
-                width = 2
-                high = 3
-                pmc_h=1
-                irc_h=1
-                tms_h=1
-                gateway_h=1
+            width = 2
+            high = 3
+            pmc_h=1
+            irc_h=1
+            tms_h=1
+            gateway_h=1
                     
             print('width :%d, height : %d' % (cap.get(3), cap.get(4))) #현재 카메라의 해상도 출력
 
@@ -94,6 +81,17 @@ def camThread():
                         panel = tk.Label(image=image)
                         panel.image = image
                         panel.pack(side="left")
+
+                        ch = 0
+                        
+                        button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
+                        button1.place(x=1000, y=500)
+
+                        button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
+                        button2.place(x=1000, y=400)
+
+                        button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
+                        button3.place(x=1000, y=300)
                         
                     else:
                         panel.configure(image=image)
@@ -165,21 +163,12 @@ def camThread():
                         
             cap.release() #프로그램 최종종료
             cv2.destroyAllWindows()
-            
-    except NameError as e:
-        print(e)
-
-        result.config(text = "프로그램 시작 직후 반드시 모드를 선택해주세요! 잠시 후 프로그램이 재시작됩니다.")
-        result2.config(text = "모드가 선택되지 않았습니다.")
-
-        time.sleep(15)
-        os.execl(sys.executable, sys.executable, *sys.argv)
 
     except PermissionError as e:
         print(e)
 
         result.config(text = "현재 활성화 된 엑셀 파일을 닫아주세요! 잠시후 프로그램이 재시작됩니다.")
-        result2.config(text = e)
+        ErrorMessage.config(text = e)
 
         time.sleep(15)
         os.execl(sys.executable, sys.executable, *sys.argv)
@@ -190,8 +179,6 @@ if __name__ == '__main__': #Main
             thread_img = threading.Thread(target=camThread, args=())
             thread_img.daemon = True
             thread_img.start()
-
-            ch = 0
             
             root = tk.Tk()
             root.title("GEM 자동화 엑셀 작성 툴")
@@ -200,23 +187,14 @@ if __name__ == '__main__': #Main
             State = tk.Label(root, text = '모드를 입력하십시오', font = 'TkFixedFont')
             State.pack()
 
-            button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
-            button1.place(x=1000, y=500)
-
-            button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
-            button2.place(x=1000, y=400)
-
-            button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
-            button3.place(x=1000, y=300)
-
             result = tk.Label(root, text = 'Result', font = 'TkFixedFont')
             result.pack()
 
-            result2 = tk.Label(root, text = 'Result', font = 'TkFixedFont')
-            result2.pack()
+            ErrorMessage = tk.Label(root, text = 'Result', font = 'TkFixedFont')
+            ErrorMessage.pack()
+            
+           
 
-            
-            
             root.mainloop()
     except NameError as e:
         print(e)
