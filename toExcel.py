@@ -60,7 +60,9 @@ def Doctor_processing(write_ws, decodedObjects,width,high): #의사협회 관리
        
 def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
 
-        write_ws.cell(high,width,decodedObjects)
+    for obj in decodedObjects:
+        code = obj.data
+        write_ws.cell(high,width,code.decode())
         write_ws.cell(high,width+1,'회사 7층')
 
         stri = datetime.today().strftime("%Y-%m-%d")

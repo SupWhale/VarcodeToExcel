@@ -15,6 +15,7 @@ from decode import *
 from GEM import *
 import sys
 
+
 def Setmode_Doc(ch):
     global choice
     State.config(text = '의사협회모드')
@@ -42,7 +43,12 @@ def save_filename(types):
     return stri
 
 def camThread():
+    ch = 0
+    button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
+    button1.place(x=1000, y=500)
 
+    button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
+    button3.place(x=1000, y=300)
     try:
             cap = cv2.VideoCapture(1) #외부 웹캠을 불러옴
             write_wb = Workbook() #워크시트를 생성할 객체 생성
@@ -55,20 +61,12 @@ def camThread():
             irc_h=1
             tms_h=1
             gateway_h=1
-
                     
             print('width :%d, height : %d' % (cap.get(3), cap.get(4))) #현재 카메라의 해상도 출력
 
-            
-            
             check_code = False
             
             while(True):
-
-                
-                        
-                    
-
                 end_point = False
                 ret, frame = cap.read()    # Read 결과와 frame
                 if(ret) :
@@ -76,17 +74,6 @@ def camThread():
                     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     image = Image.fromarray(image)
                     image = ImageTk.PhotoImage(image)
-
-                    ch = 0
-
-                    button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
-                    button1.place(x=1000, y=500)
-
-                    button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
-                    button2.place(x=1000, y=400)
-
-                    button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
-                    button3.place(x=1000, y=300)
 
                     if panel is None:
                         panel = tk.Label(image=image)
@@ -98,26 +85,23 @@ def camThread():
                         panel.image = image
                     
                     if choice == 2:
-                        write_wb = load_workbook("재고 관리 파일.xlsx")
-                        pmc_ws = write_wb['PMC']
-                        gateway_ws = write_wb['Gateway']
-                        tms_ws = write_wb['TMS']
-                        irc_ws = write_wb['IRC']
+                            write_wb = load_workbook("재고 관리 파일.xlsx")
+                            pmc_ws = write_wb['PMC']
+                            gateway_ws = write_wb['Gateway']
+                            tms_ws = write_wb['TMS']
+                            irc_ws = write_wb['IRC']
 
-                        width = 3
-                        high = 3
-                        pmc_h=pmc_ws.cell(2,20).value
-                        irc_h=irc_ws.cell(2,20).value
-                        tms_h= tms_ws.cell(2,20).value
-                        gateway_h=gateway_ws.cell(2,20).value
+                            width = 3
+                            high = 3
+                            pmc_h=pmc_ws.cell(2,20).value
+                            irc_h=irc_ws.cell(2,20).value
+                            tms_h= tms_ws.cell(2,20).value
+                            gateway_h=gateway_ws.cell(2,20).value
                     else:
                         write_wb2 = load_workbook("GEM 데이터베이스.xlsx") 
                         write_ws2 = write_wb2['Sheet']
                         db_h = write_ws2.cell(2,20).value
                         width2 = 2
-
-
-
 
                     if keyboard.is_pressed('q'):
                         time.sleep(0.1)
@@ -127,6 +111,7 @@ def camThread():
                         decodedObjects = decode(im)#바코드 해석 
                         result.config(text = decode_serial(im))
                         
+
                         if decodedObjects == []:
                             result.config(text = "감지된 바코드가 없습니다.")
                             continue
@@ -160,22 +145,22 @@ def camThread():
                                 
                                 if types == "TMS":
                                     
-                                    Stock_Manage(tms_ws, decodedObjects_s,width,tms_h)
+                                    Stock_Manage(tms_ws, decodedObjects,width,tms_h)
                                     tms_h = tms_h+1
                                     
                                 elif types == "PMC":
                                     
-                                    Stock_Manage(pmc_ws, decodedObjects_s,width,pmc_h)
+                                    Stock_Manage(pmc_ws, decodedObjects,width,pmc_h)
                                     pmc_h = pmc_h+ 1
                                     
                                 elif types == "IRC":
 
-                                    Stock_Manage(irc_ws, decodedObjects_s,width,irc_h)
+                                    Stock_Manage(irc_ws, decodedObjects,width,irc_h)
                                     irc_h = irc_h+ 1
                                     
                                 elif types == "GateWay":
                                     
-                                    Stock_Manage(gateway_ws, decodedObjects_s,width,gateway_h)
+                                    Stock_Manage(gateway_ws, decodedObjects,width,gateway_h)
                                     gateway_h = gateway_h+1
                                     
                                 high = high+1
@@ -201,6 +186,14 @@ def camThread():
                         
             cap.release() #프로그램 최종종료
             cv2.destroyAllWindows()
+    except NameError as e:
+        print(e)
+
+        result.config(text = "잠시후 프로그램이 재시작됩니다.")
+        ErrorMessage.config(text = e)
+
+        time.sleep(15)
+        os.execl(sys.executable, sys.executable, *sys.argv)
 
     except PermissionError as e:
         print(e)
