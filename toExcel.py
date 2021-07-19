@@ -62,7 +62,7 @@ def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
 
     for obj in decodedObjects:
         code = obj.data
-        write_ws.cell(high,width,code.decode())
+        write_ws.cell(high,width,code)
         write_ws.cell(high,width+1,'회사 7층')
 
         stri = datetime.today().strftime("%Y-%m-%d")
@@ -70,7 +70,7 @@ def Stock_Manage(write_ws, decodedObjects,width,high): #재고 관리 모드
         color =  PatternFill(start_color='ffff99', end_color='ffff99', fill_type='solid')
         
         write_ws.cell(high,width+2,stri)
-        write_ws.cell(1,20, '아래 셀을 절대 지우지 마세요').fill = color
+        write_ws.cell(2,20, '아래 셀을 절대 지우지 마세요').fill = color
         write_ws.cell(2,20,high).fill = color
 
 def install_Int(write_ws, decodedObjects,high): #GEM 설치정보 양식에 맞춘 모드

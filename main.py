@@ -47,6 +47,9 @@ def camThread():
     button1 = tk.Button(root, overrelief="solid", text = "의사협회 모드" ,width=15, command = lambda: Setmode_Doc(ch))
     button1.place(x=1000, y=500)
 
+    button2 = tk.Button(root, overrelief="solid", text = "재고관리 모드" ,width=15, command = lambda: Setmode_Stock(ch))
+    button2.place(x=1000, y=400)
+
     button3 = tk.Button(root, overrelief="solid", text = "설치정보 모드" ,width=15, command = lambda: Setmode_Install(ch))
     button3.place(x=1000, y=300)
     try:
@@ -93,10 +96,10 @@ def camThread():
 
                             width = 3
                             high = 3
-                            pmc_h=pmc_ws.cell(2,20).value
-                            irc_h=irc_ws.cell(2,20).value
-                            tms_h= tms_ws.cell(2,20).value
-                            gateway_h=gateway_ws.cell(2,20).value
+                            pmc_h=pmc_ws.cell(3,20).value
+                            irc_h=irc_ws.cell(3,20).value
+                            tms_h= tms_ws.cell(3,20).value
+                            gateway_h=gateway_ws.cell(3,20).value
                     else:
                         write_wb2 = load_workbook("GEM 데이터베이스.xlsx") 
                         write_ws2 = write_wb2['Sheet']
@@ -207,9 +210,6 @@ def camThread():
 
 if __name__ == '__main__': #Main
     try:
-            thread_img = threading.Thread(target=camThread, args=())
-            thread_img.daemon = True
-            thread_img.start()
             
             root = tk.Tk()
             root.title("GEM 자동화 엑셀 작성 툴")
@@ -224,7 +224,10 @@ if __name__ == '__main__': #Main
             ErrorMessage = tk.Label(root, text = 'Result', font = 'TkFixedFont')
             ErrorMessage.pack()
             
-           
+            thread_img = threading.Thread(target=camThread, args=())
+            thread_img.daemon = True
+            thread_img.start()
+            
 
             root.mainloop()
     except NameError as e:
