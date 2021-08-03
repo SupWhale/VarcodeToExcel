@@ -57,13 +57,7 @@ def camThread():
             write_wb = Workbook() #워크시트를 생성할 객체 생성
             write_ws = write_wb.create_sheet('기본시트') #워크 시트 생성
             panel = None #GUI를 생성할 판넬 생성
-            width2 = 2
-            width = 2
-            high = 3
-            pmc_h=1
-            irc_h=1
-            tms_h=1
-            gateway_h=1
+            lable_WH = [2,2,3,1,1,1,1] #width2(0), width(1), high(2), pmc_h(3), irc_h(4), tms_h(5), gateway_h(6)
                     
             print('width :%d, height : %d' % (cap.get(3), cap.get(4))) #현재 카메라의 해상도 출력
 
@@ -94,12 +88,12 @@ def camThread():
                             tms_ws = write_wb['TMS']
                             irc_ws = write_wb['IRC']
 
-                            width = 3
-                            high = 3
-                            pmc_h=pmc_ws.cell(3,20).value
-                            irc_h=irc_ws.cell(3,20).value
-                            tms_h= tms_ws.cell(3,20).value
-                            gateway_h=gateway_ws.cell(3,20).value
+                            lable_WH[1] = 3
+                            lable_WH[2] = 3
+                            lable_WH[3] = pmc_ws.cell(3,20).value
+                            lable_WH[4] = irc_ws.cell(3,20).value
+                            lable_WH[5] = tms_ws.cell(3,20).value
+                            lable_WH[6] = gateway_ws.cell(3,20).value
                     else:
                         write_wb2 = load_workbook("GEM 데이터베이스.xlsx") 
                         write_ws2 = write_wb2['Sheet']
@@ -123,21 +117,21 @@ def camThread():
                         
                             if choice == 1:
                                 
-                                DB_sell(write_ws2, decodedObjects, width2, db_h)
+                                DB_sell(write_ws2, decodedObjects, lable_WH[0], db_h)
 
-                                if width2 < 3:
-                                    width2 = width2+1
-                                elif width2 == 3:
-                                    width2 = 2
+                                if lable_WH[0] < 3:
+                                    lable_WH[0] = lable_WH[0]+1
+                                elif lable_WH[0] == 3:
+                                    lable_WH[0] = 2
                                     db_h = db_h+1
 
-                                Doctor_processing(write_ws, decodedObjects,width,high)
+                                Doctor_processing(write_ws, decodedObjects,lable_WH[1],lable_WH[2])
                                 
-                                if width < 7:
-                                    width = width+1
-                                elif width == 7:
-                                    width = 3
-                                    high = high+1
+                                if lable_WH[1] < 7:
+                                    lable_WH[1] = lable_WH[1]+1
+                                elif lable_WH[1] == 7:
+                                    lable_WH[1] = 3
+                                    lable_WH[2] = lable_WH[2]+1
                                                                     
                             elif choice == 2:
     
@@ -148,44 +142,44 @@ def camThread():
                                 
                                 if types == "TMS":
                                     
-                                    Stock_Manage(tms_ws, decodedObjects,width,tms_h)
-                                    tms_h = tms_h+1
+                                    Stock_Manage(tms_ws, decodedObjects,lable_WH[1],lable_WH[5])
+                                    lable_WH[5] = lable_WH[5]+1
                                     
                                 elif types == "PMC":
                                     
-                                    Stock_Manage(pmc_ws, decodedObjects,width,pmc_h)
-                                    pmc_h = pmc_h+ 1
+                                    Stock_Manage(pmc_ws, decodedObjects,lable_WH[1],lable_WH[3])
+                                    lable_WH[3] = lable_WH[3]+ 1
                                     
                                 elif types == "IRC":
 
-                                    Stock_Manage(irc_ws, decodedObjects,width,irc_h)
-                                    irc_h = irc_h+ 1
+                                    Stock_Manage(irc_ws, decodedObjects,lable_WH[1],lable_WH[4])
+                                    lable_WH[4] = lable_WH[4]+ 1
                                     
                                 elif types == "GateWay":
                                     
-                                    Stock_Manage(gateway_ws, decodedObjects,width,gateway_h)
-                                    gateway_h = gateway_h+1
+                                    Stock_Manage(gateway_ws, decodedObjects,lable_WH[1],lable_WH[6])
+                                    lable_WH[6] = lable_WH[6]+1
                                     
-                                high = high+1
+                                lable_WH[2] = lable_WH[2]+1
                                 
                             elif choice == 3:
-                                DB_sell(write_ws2, decodedObjects, width2, db_h)
+                                DB_sell(write_ws2, decodedObjects, lable_WH[0], db_h)
 
-                                if width2 < 3:
-                                    width2 = width2+1
-                                elif width2 == 3:
-                                    width2 = 2
+                                if lable_WH[0] < 3:
+                                    lable_WH[0] = lable_WH[0]+1
+                                elif lable_WH[0] == 3:
+                                    lable_WH[0] = 2
                                     db_h = db_h+1
 
 
-                                install_Int(write_ws, decodedObjects,high)
-                                high = high+1
+                                install_Int(write_ws, decodedObjects,lable_WH[2])
+                                lable_WH[2] = lable_WH[2]+1
                             
                             
                             stri = save_filename(choice)
                             
                             write_wb.save(stri + '.xlsx') #엑셀 파일 저장
-                            write_wb2.save("GEM 데이터베이스.xlsx")
+                            ##write_wb2.save("GEM 데이터베이스.xlsx")
                         
             cap.release() #프로그램 최종종료
             cv2.destroyAllWindows()
